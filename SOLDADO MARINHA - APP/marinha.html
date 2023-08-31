@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarinhaTask App</title>
+</head>
+<body>
+    <h1>MarinhaTask App</h1>
+
+    <h2>Soldier Information</h2>
+    <p>Name: <span id="soldierName"></span></p>
+    <p>Rank: <span id="soldierRank"></span></p>
+
+    <h2>Schedule</h2>
+    <ul id="scheduleList"></ul>
+    <button id="addScheduleButton">Add Schedule Item</button>
+    <input id="activityInput" placeholder="Activity">
+    <input id="dateInput" type="date">
+    <input id="timeInput" type="time">
+
+    <h2>Equipment Inventory</h2>
+    <ul id="equipmentList"></ul>
+    <button id="addEquipmentButton">Add Equipment</button>
+    <input id="itemInput" placeholder="Item">
+    <input id="quantityInput" type="number">
+
+    <h2>Diary Entries</h2>
+    <ul id="diaryList"></ul>
+    <button id="addDiaryButton">Add Diary Entry</button>
+    <textarea id="entryInput" rows="3" placeholder="Diary Entry"></textarea>
+
+    <h2>Messages</h2>
+    <ul id="messageList"></ul>
+    <button id="sendMessageButton">Send Message</button>
+    <input id="recipientInput" placeholder="Recipient">
+    <input id="messageInput" placeholder="Message">
+
+    <script>
+        class Soldier {
+            constructor(name, rank) {
+                this.name = name;
+                this.rank = rank;
+                this.schedule = [];
+                this.equipmentInventory = {};
+                this.diaryEntries = [];
+                this.messages = [];
+            }
+
+            addScheduleItem(activity, date, time) {
+                this.schedule.push({ activity, date, time });
+            }
+
+            addEquipment(item, quantity) {
+                if (this.equipmentInventory[item]) {
+                    this.equipmentInventory[item] += quantity;
+                } else {
+                    this.equipmentInventory[item] = quantity;
+                }
+            }
+
+            addDiaryEntry(entry) {
+                this.diaryEntries.push({ date: new Date(), entry });
+            }
+
+            sendMessage(recipient, message) {
+                this.messages.push({ recipient, message, timestamp: new Date() });
+            }
+        }
+
+        const soldier1 = new Soldier("John Doe", "Sergeant");
+
+        function updateInterface() {
+            // Atualizando a interface com os dados do soldado
+            document.getElementById("soldierName").textContent = soldier1.name;
+            document.getElementById("soldierRank").textContent = soldier1.rank;
+
+            const scheduleList = document.getElementById("scheduleList");
+            scheduleList.innerHTML = "";
+            soldier1.schedule.forEach(item => {
+                const li = document.createElement("li");
+                li.textContent = `${item.activity} - ${item.date}, ${item.time}`;
+                scheduleList.appendChild(li);
+            });
+
+            const equipmentList = document.getElementById("equipmentList");
+            equipmentList.innerHTML = "";
+            for (const item in soldier1.equipmentInventory) {
+                const li = document.createElement("li");
+                li.textContent = `${item}: ${soldier1.equipmentInventory[item]}`;
+                equipmentList.appendChild(li);
+            }
+
+            const diaryList = document.getElementById("diaryList");
+            diaryList.innerHTML = "";
+            soldier1.diaryEntries.forEach(entry => {
+                const li = document.createElement("li");
+                li.textContent = `${entry.date.toLocaleString()}: ${entry.entry}`;
+                diaryList.appendChild(li);
+            });
+
+            const messageList = document.getElementById("messageList");
+            messageList.innerHTML = "";
+            soldier1.messages.forEach(message => {
+                const li = document.createElement("li");
+                li.textContent = `${message.timestamp.toLocaleString()} - To: ${message.recipient}, Message: ${message.message}`;
+                messageList.appendChild(li);
+            });
+        }
+
+        // Atualiza a interface inicialmente
+        updateInterface();
+
+        // Adiciona um item à programação
+        document.getElementById("addScheduleButton").addEventListener("click", () => {
+            const activity = document.getElementById("activityInput").value;
+            const date = document.getElementById("dateInput").value;
+            const time = document.getElementById("timeInput").value;
+
+            if (activity && date && time) {
+                soldier1.addScheduleItem(activity, date, time);
+                updateInterface();
+            }
+        });
+
+        // Adiciona um item ao inventário de equipamentos
+        document.getElementById("addEquipmentButton").addEventListener("click", () => {
+            const item = document.getElementById("itemInput").value;
+            const quantity = parseInt(document.getElementById("quantityInput").value);
+
+            if (item && !isNaN(quantity)) {
+                soldier1.addEquipment(item, quantity);
+                updateInterface();
+            }
+        });
+
+        // Adiciona uma entrada ao diário de bordo
+        document.getElementById("addDiaryButton").addEventListener("click", () => {
+            const entry = document.getElementById("entryInput").value;
+
+            if (entry) {
+                soldier1.addDiaryEntry(entry);
+                updateInterface();
+            }
+        });
+
+        // Envia uma mensagem
+        document.getElementById("sendMessageButton").addEventListener("click", () => {
+            const recipient = document.getElementById("recipientInput").value;
+            const message = document.getElementById("messageInput").value;
+
+            if (recipient && message) {
+                soldier1.sendMessage(recipient, message);
+                updateInterface();
+            }
+        });
+    </script>
+</body>
+</html>
